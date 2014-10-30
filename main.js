@@ -7,12 +7,13 @@ $(document).ready(function(){
         // alert("click");
         var cell = $(this);
           if(turn=== 0){
-            turn = 1 ;
+
             cell.css("background", "url(images/o.png");
+            turn = 1 ;
 
           }else{
-            turn = 0;
             cell.css("background", "url(images/o.png");
+            turn = 0;
           }
       }
     );
