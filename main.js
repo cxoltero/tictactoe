@@ -12,12 +12,12 @@
   var gameNumber = prompt('Please enter game id, press ok for new game');
   var gameID = gameNumber || randomId();
   var player1 =  prompt("Player 1 name", 'Player 1');
-  var player2 =  prompt("Player 2 name",  'Player 1') ;
+  var player2 =  prompt("Player 2 name",  'Player 2') ;
   var myDataRef = new Firebase('https://tictactoexxx.firebaseio.com/games');
-  var turn = 1;
-  var counter = 0;
   var currentPlayer = '';
   var gameOver= false;
+  var turn = 0;
+  var counter = 0;
 // here we tell the function that when you click on any of the cells
 // it has to change the image background of that cell,
 
@@ -34,6 +34,8 @@
     obj.player1 = player1;
     obj.player2 = player2;
     obj.winner = '';
+    obj.turn = 1;
+    obj.counter = 0;
     return obj;
   }
 
@@ -53,23 +55,10 @@
             }
           }
         }
-      }
-  });
 
-  currentGame.on('child_changed', function(value){
-    var currentObj = value.val();
-     // if(currentObj){
-     //    for(var i = 1; i <=3; i++){
-     //      for(var j = 1; j <= 3; j++){
-     //        var id = 'cell'+i+j;
-     //        console.log(id);
-     //        if(currentObj[id]){
-     //          console.log(currentObj[id]);
-     //          $(id).addClass(currentObj[id]);
-     //        }
-     //      }
-     //    }
-     //  }
+      counter = currentObj.counter;
+      turn = currentObj.turn;
+      }
   });
 
   
@@ -84,29 +73,29 @@
 
       if(turn=== 0){
         obj[this.id] = 'o';
+        obj.turn = 1;
         currentGame.update(obj);
         currentPlayer = player2;
         validate();
-        turn = 1 ;
       }else{
         obj[this.id] = 'x';
+        obj.turn = 0;
         currentGame.update(obj);
         currentPlayer = player1;
-        validate()
-        turn = 0;
+        validate();
       }
       counter ++;
-    }
-    if(counter === 9 && gameOver === false){
+      if(counter === 9 && gameOver === false){
         alert('it was a tie');
+      }
     }
 
     function checkRow(){
         for(var i =1; i<4; i++){
             if($('#row'+i).children('.x').length === 3 || $('#row'+i).children('.o').length === 3){
-                alert(currentPlayer + ' won!');
+                // alert(currentPlayer + ' won!');
                 gameOver= true;
-                returns;
+                return;
             };
         }
     }
@@ -116,7 +105,7 @@
             if(
               ($('#cell1'+i).hasClass('x') && $('#cell2'+i).hasClass('x') && $('#cell3'+i).hasClass('x')) || 
               ($('#cell1'+i).hasClass('o') && $('#cell2'+i).hasClass('o') && $('#cell3'+i).hasClass('o'))){
-                alert(currentPlayer + ' won!');
+                // alert(currentPlayer + ' won!');
                 gameOver= true;
                 return;
             }
@@ -126,13 +115,13 @@
     function checkCross(){
       if(($('#cell22').hasClass('x') && $('#cell11').hasClass('x') && $('#cell33').hasClass('x')) ||
          ($('#cell22').hasClass('o') && $('#cell11').hasClass('o') && $('#cell33').hasClass('o'))){
-          alert(currentPlayer + ' won!');
+          // alert(currentPlayer + ' won!');
           gameOver= true;
           return;
       }
       else if(($('#cell22').hasClass('x') && $('#cell31').hasClass('x') && $('#cell13').hasClass('x')) ||
          ($('#cell22').hasClass('o') && $('#cell31').hasClass('o') && $('#cell13').hasClass('o'))){
-          alert(currentPlayer + ' won!');
+          // alert(currentPlayer + ' won!');
           gameOver= true;
           return;
       }
@@ -143,8 +132,12 @@
         checkCol();
         checkCross();
         if(gameOver){
-            window.location.reload();
-        }
+          var another = confirm(currentPlayer + ' won!, Would you like to start another game?');
+          if(another){
+            // window.location.reload();
+            currentGame.update(newObj());
+          }
+        } 
     }
   });
 
